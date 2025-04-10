@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 from sklearn.linear_model import LogisticRegression
-from utils import sample_l2lap, generate_synth_data
+from src.utils import sample_l2lap, generate_synth_data
 
 class TwoStage:
     def __init__(self, X_train, y_train, X_test, y_test):

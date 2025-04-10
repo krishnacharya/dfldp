@@ -33,7 +33,4 @@ def generate_synth_data(B_train, B_test, d):
     y_train = np.random.choice([-1, 1], size=(B_train,))
     y_test = np.random.choice([-1, 1], size=(B_test,))
 
-    #generate noise vector
-    b = np.random.randn(d)
-
-    return X_train, y_train, X_test, y_test, b
+    return X_train, y_train, X_test, y_test

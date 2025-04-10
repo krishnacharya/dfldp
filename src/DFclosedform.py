@@ -1,5 +1,5 @@
 
-from utils import sample_l2lap, generate_synth_data
+from src.utils import sample_l2lap, generate_synth_data
 
 class DFL:
     def __init__(self, X_train, y_train, X_test, y_test):
