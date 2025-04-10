@@ -1,5 +1,7 @@
 
 from src.utils import sample_l2lap, generate_synth_data
+from src.LogLossAccuracy import LogLossAccuracy
+from src.LPopt import LPOpt
 
 class DFL:
     def __init__(self, X_train, y_train, X_test, y_test):
@@ -24,6 +26,30 @@ class DFL:
         b = sample_l2lap(eta = eta, d = self.dim)
         self.w_pri = 1/lamb * (1/c * self.X_train.T @ self.y_train - 1/self.n_train * b)
         return self.w_pri
+
+    def metrics_train(self, w, lpopt_train:LPOpt):
+        '''
+            Get logloss, accuracy, decision quality on training data
+
+            lpopt is the optimization problem on the training data
+        '''
+        lla = LogLossAccuracy(self.X_train, self.y_train)
+        ll = lla.get_logloss(w)
+        acc = lla.get_accuracy(w)
+        dq = lpopt_train.get_DQ(w)
+        return ll, acc, dq
+
+    def metrics_test(self, w, lpopt_test:LPOpt):
+        '''
+            Get logloss, accuracy, decision quality on test data
+
+            lpopt is the optimization problem on the test data
+        '''
+        lla = LogLossAccuracy(self.X_test, self.y_test)
+        ll = lla.get_logloss(w)
+        acc = lla.get_accuracy(w)
+        dq = lpopt_test.get_DQ(w)
+        return ll, acc, dq
 
 if __name__ == "__main__":
     # Example usage:

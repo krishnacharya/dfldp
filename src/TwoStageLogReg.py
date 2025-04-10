@@ -3,7 +3,7 @@ from scipy.optimize import minimize
 from sklearn.linear_model import LogisticRegression
 from src.utils import sample_l2lap, generate_synth_data
 from src.LogLossAccuracy import LogLossAccuracy
-from src.LPopt import L
+from src.LPopt import LPOpt
 
 class TwoStage:
     def __init__(self, X_train, y_train, X_test, y_test):
@@ -80,21 +80,29 @@ class TwoStage:
         self.w_pri = result.x
         return self.w_pri
 
-    def metrics_train(self, w, G=None, h=None):
+    def metrics_train(self, w, lpopt_train:LPOpt):
         '''
             Get logloss, accuracy, decision quality on training data
 
-            G and h are the constraints in the LP formulation Gz \leq h, G has shape (m,n_test), h has shape (m,)
+            lpopt is the optimization problem on the training data
         '''
-        pass
+        lla = LogLossAccuracy(self.X_train, self.y_train)
+        ll = lla.get_logloss(w)
+        acc = lla.get_accuracy(w)
+        dq = lpopt_train.get_DQ(w)
+        return ll, acc, dq
 
-    def metrics_test(self, w, G=None, h=None):
+    def metrics_test(self, w, lpopt_test:LPOpt):
         '''
             Get logloss, accuracy, decision quality on test data
 
             G and h are the constraints in the LP formulation Gz \leq h, G has shape (m,n_test), h has shape (m,)
         '''
-        pass
+        lla = LogLossAccuracy(self.X_test, self.y_test)
+        ll = lla.get_logloss(w)
+        acc = lla.get_accuracy(w)
+        dq = lpopt_test.get_DQ(w)
+        return ll, acc, dq
 
 if __name__ == "__main__":
     # Example usage:

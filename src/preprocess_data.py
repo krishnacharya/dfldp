@@ -71,7 +71,7 @@ def preprocess_adultreconstructed(income_value:int=50000):
 
     targets = targets.apply(lambda x: 1 if x >= income_value else -1)
     df[target_col] = targets # add target column back to df
-    save_path = processed_data_root() / "adult_reconstructed.csv"
+    save_path = processed_data_root() / "adult_recon.csv"
     df.to_csv(save_path, index=False)
 
 def preprocess_adult_uci(): # there is slight variation in this dataset, some missing vals, use preprocess_adultreconstructed
@@ -88,6 +88,6 @@ if __name__=="__main__":
     ts_logreg = TwoStage(X_train, y_train, X_test, y_test)
     w_nopri = ts_logreg.train_noprivacy(lamb=lamb)
     
-    
+
 
 
