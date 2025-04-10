@@ -3,12 +3,10 @@ from gurobipy import GRB
 import numpy as np
 
 class LPOpt:
-    def __init__(self, X_test, y_test, G, h):
-        self.X_test = X_test
-        self.y_test = y_test
-        self.n_test, self.dim = X_test.shape
-        self.G = G
-        self.h = h
+    def __init__(self, X, y, G=None, h=None):
+        self.X, self.y, self.n_test, self.dim = X, y, X.shape[0], X.shape[1]
+        self.G = np.vstack((np.identity(self.n_test), -np.identity(self.n_test))) if G is None else G
+        self.h = np.concatenate((np.ones(self.n_test), np.zeros(self.n_test))) if h is None else h
 
     def get_z(self, y_hat):
         '''
@@ -48,11 +46,11 @@ class LPOpt:
             Decision quality given this weight vector w
         '''
         if w.shape[0] != self.dim:
-            raise ValueError("Weight vector w must have the same dimension as the feature matrix X_test.")
-        y_hat = self.X_test @ w
+            raise ValueError("Weight vector w must have the same dimension as the feature matrix X.")
+        y_hat = self.X @ w
         z_hat, _ = self.get_z(y_hat)
         if z_hat is not None:
-            self.DQ = self.y_test @ z_hat
+            self.DQ = self.y @ z_hat
             return self.DQ
         else:
             return None
@@ -60,15 +58,14 @@ class LPOpt:
 if __name__ == '__main__':
     n_test = 5
     dim = 3
-    m = 4
 
-    X_test = np.random.rand(n_test, dim)
-    y_test = np.random.rand(n_test)
+    X = np.random.rand(n_test, dim)
+    y = np.random.rand(n_test)
 
 
-    G = np.vstack((np.identity(n_test), -np.identity(n_test)))
-    h = np.concatenate((np.ones(n_test), np.zeros(n_test)))
-    lp_opt = LPOpt(X_test, y_test, G, h)
+    # G = np.vstack((np.identity(n_test), -np.identity(n_test)))
+    # h = np.concatenate((np.ones(n_test), np.zeros(n_test)))
+    lp_opt = LPOpt(X, y)
 
     zhat, obj = lp_opt.get_z(y_hat=np.array([-1,1,2,-1,-2]))
     print(zhat, obj)
@@ -77,7 +74,7 @@ if __name__ == '__main__':
     w = np.random.normal(scale=10,size=(dim,)) # dummy
 
     # Get the optimal z for a given y_hat
-    # y_hat_example = X_test @ w
+    # y_hat_example = X @ w
     # z_optimal = lp_opt.get_z(y_hat_example)
     # print("Optimal z:\n", z_optimal)
 

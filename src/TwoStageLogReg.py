@@ -2,6 +2,8 @@ import numpy as np
 from scipy.optimize import minimize
 from sklearn.linear_model import LogisticRegression
 from src.utils import sample_l2lap, generate_synth_data
+from src.LogLossAccuracy import LogLossAccuracy
+from src.LPopt import L
 
 class TwoStage:
     def __init__(self, X_train, y_train, X_test, y_test):
@@ -77,6 +79,22 @@ class TwoStage:
                           jac=logistic_loss_private_grad, method='L-BFGS-B')
         self.w_pri = result.x
         return self.w_pri
+
+    def metrics_train(self, w, G=None, h=None):
+        '''
+            Get logloss, accuracy, decision quality on training data
+
+            G and h are the constraints in the LP formulation Gz \leq h, G has shape (m,n_test), h has shape (m,)
+        '''
+        pass
+
+    def metrics_test(self, w, G=None, h=None):
+        '''
+            Get logloss, accuracy, decision quality on test data
+
+            G and h are the constraints in the LP formulation Gz \leq h, G has shape (m,n_test), h has shape (m,)
+        '''
+        pass
 
 if __name__ == "__main__":
     # Example usage:

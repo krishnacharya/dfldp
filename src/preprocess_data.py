@@ -54,23 +54,23 @@ def preprocess_adultreconstructed(income_value:int=50000):
     df.dropna(inplace=True)
     print("Shape after dropping NA", df.shape)
 
-    target = 'income'
+    target_col = 'income'
     numeric_feat = ['hours-per-week', 'age', 'capital-gain', 'capital-loss', 'education-num']
     categorical_feat = ['occupation', 'workclass', 'education', 'marital-status', 'relationship', \
                         'race', 'gender', 'native-country']
-    features = numeric_feat + categorical_feat
+    targets = df[target_col]
+    df = df.drop(columns=[target_col])
 
     scaler = MinMaxScaler()
     df[numeric_feat] = scaler.fit_transform(df[numeric_feat])
     df = pd.get_dummies(df, columns=categorical_feat, drop_first=True) # one-hot encoding dimension is #of classes
-
-    M = max(np.linalg.norm(df[features].to_numpy(), ord=2, axis=1)) # get max L2 norms of rows, TODO maybe alternatives here?
+    df = 1.0 * df # convert bools to 0-1
+    M = max(np.linalg.norm(df.to_numpy(), ord=2, axis=1)) # get max L2 norms of rows, TODO maybe alternatives here?
     print("Max L2 norm of rows", M)
-    df[features] = df[features] / M
+    df = df / M
 
-    df[target] = df[target].apply(lambda x: 1 if x >= income_value else -1)
-    
-    # save df as csv
+    targets = targets.apply(lambda x: 1 if x >= income_value else -1)
+    df[target_col] = targets # add target column back to df
     save_path = processed_data_root() / "adult_reconstructed.csv"
     df.to_csv(save_path, index=False)
 
@@ -84,5 +84,10 @@ if __name__=="__main__":
     X_train, X_test, y_train, y_test = split_data(df, target_col='income', train_size=1000, test_size=1000)
     print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
+    lamb = 0.1
+    ts_logreg = TwoStage(X_train, y_train, X_test, y_test)
+    w_nopri = ts_logreg.train_noprivacy(lamb=lamb)
+    
+    
 
 
