@@ -71,22 +71,22 @@ def preprocess_adultreconstructed(income_value:int=50000):
 
     targets = targets.apply(lambda x: 1 if x >= income_value else -1)
     df[target_col] = targets # add target column back to df
-    save_path = processed_data_root() / "adult_recon.csv"
+    save_path = processed_data_root() / f"adult_recon{income_value}.csv"
     df.to_csv(save_path, index=False)
 
 def preprocess_adult_uci(): # there is slight variation in this dataset, some missing vals, use preprocess_adultreconstructed
     pass
 
 if __name__=="__main__":
-    preprocess_adultreconstructed()
-    df = pd.read_csv(str(processed_data_root() / "adult_reconstructed.csv"))
-    print(df.head())
-    X_train, X_test, y_train, y_test = split_data(df, target_col='income', train_size=1000, test_size=1000)
-    print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+    preprocess_adultreconstructed(income_value=26000)
+    # df = pd.read_csv(str(processed_data_root() / "adult_reconstructed.csv"))
+    # print(df.head())
+    # X_train, X_test, y_train, y_test = split_data(df, target_col='income', train_size=1000, test_size=1000)
+    # print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-    lamb = 0.1
-    ts_logreg = TwoStage(X_train, y_train, X_test, y_test)
-    w_nopri = ts_logreg.train_noprivacy(lamb=lamb)
+    # lamb = 0.1
+    # ts_logreg = TwoStage(X_train, y_train, X_test, y_test)
+    # w_nopri = ts_logreg.train_noprivacy(lamb=lamb)
     
 
 

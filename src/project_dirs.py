@@ -19,5 +19,10 @@ def processed_data_root() -> Path:
     res.mkdir(parents=True, exist_ok=True)
     return res
 
+def output_dir():
+    res = project_root() / "output"
+    res.mkdir(parents=True, exist_ok=True)
+    return res
+
 def src_dir():
     return project_root() / "src"

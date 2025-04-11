@@ -25,7 +25,7 @@ class DFL:
         eta = c * epsilon / (4 * self.n_train**1.5)
         b = sample_l2lap(eta = eta, d = self.dim)
         self.w_pri = 1/lamb * (1/c * self.X_train.T @ self.y_train - 1/self.n_train * b)
-        return self.w_pri
+        return self.w_pri # this can get absurdly large, as w itself isnt constrained?
 
     def metrics_train(self, w, lpopt_train:LPOpt):
         '''

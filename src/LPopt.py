@@ -4,23 +4,24 @@ import numpy as np
 
 class LPOpt:
     def __init__(self, X, y, G=None, h=None):
-        self.X, self.y, self.n_test, self.dim = X, y, X.shape[0], X.shape[1]
-        self.G = np.vstack((np.identity(self.n_test), -np.identity(self.n_test))) if G is None else G
-        self.h = np.concatenate((np.ones(self.n_test), np.zeros(self.n_test))) if h is None else h
+        self.X, self.y, self.n, self.dim = X, y, X.shape[0], X.shape[1]
+        self.G = np.vstack((np.identity(self.n), -np.identity(self.n))) if G is None else G
+        self.h = np.concatenate((np.ones(self.n), np.zeros(self.n))) if h is None else h
 
     def get_z(self, y_hat):
         '''
             max_z y_hat^T z
             s.t. G z <= h
 
-            y_hat is the predicted label, shape (n_test,)
-            G is the constraint matrix, shape (m, n_test)
+            y_hat is the predicted label, shape (n,)
+            G is the constraint matrix, shape (m, n)
             h is the constraint vector, shape (m,)
         '''
         try:
             model = gp.Model("LP_z")
-            n_test = y_hat.shape[0]
-            z = model.addMVar(shape=(n_test,), lb=-GRB.INFINITY, ub=GRB.INFINITY, name="z")
+            model.Params.OutputFlag = 0 # suppress Gurobi output
+            n = y_hat.shape[0]
+            z = model.addMVar(shape=(n,), lb=-GRB.INFINITY, ub=GRB.INFINITY, name="z")
             obj = y_hat @ z
             model.setObjective(obj, GRB.MAXIMIZE)
             constraints = self.G @ z <= self.h
@@ -56,15 +57,15 @@ class LPOpt:
             return None
 
 if __name__ == '__main__':
-    n_test = 5
+    n = 5
     dim = 3
 
-    X = np.random.rand(n_test, dim)
-    y = np.random.rand(n_test)
+    X = np.random.rand(n, dim)
+    y = np.random.rand(n)
 
 
-    # G = np.vstack((np.identity(n_test), -np.identity(n_test)))
-    # h = np.concatenate((np.ones(n_test), np.zeros(n_test)))
+    # G = np.vstack((np.identity(n), -np.identity(n)))
+    # h = np.concatenate((np.ones(n), np.zeros(n)))
     lp_opt = LPOpt(X, y)
 
     zhat, obj = lp_opt.get_z(y_hat=np.array([-1,1,2,-1,-2]))
