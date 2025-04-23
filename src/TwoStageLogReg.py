@@ -3,7 +3,6 @@ from scipy.optimize import minimize
 from sklearn.linear_model import LogisticRegression
 from src.utils import sample_l2lap, generate_synth_data
 from src.LogLossAccuracy import LogLossAccuracy
-from src.LPopt import LPOpt
 
 class TwoStage:
     def __init__(self, X_train, y_train, X_test, y_test):
@@ -80,7 +79,7 @@ class TwoStage:
         self.w_pri = result.x
         return self.w_pri
 
-    def metrics_train(self, w, lpopt_train:LPOpt):
+    def metrics_train(self, w, lpopt_train):
         '''
             Get logloss, accuracy, decision quality on training data
 
@@ -92,7 +91,7 @@ class TwoStage:
         dq = lpopt_train.get_DQ(w)
         return ll, acc, dq
 
-    def metrics_test(self, w, lpopt_test:LPOpt):
+    def metrics_test(self, w, lpopt_test):
         '''
             Get logloss, accuracy, decision quality on test data
 

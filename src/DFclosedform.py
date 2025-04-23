@@ -1,7 +1,7 @@
 
 from src.utils import sample_l2lap, generate_synth_data
 from src.LogLossAccuracy import LogLossAccuracy
-from src.LPopt import LPOpt
+from src.LPopt import LPOptv2, LPOpt
 
 class DFL:
     def __init__(self, X_train, y_train, X_test, y_test):
@@ -27,7 +27,7 @@ class DFL:
         self.w_pri = 1/lamb * (1/c * self.X_train.T @ self.y_train - 1/self.n_train * b)
         return self.w_pri # this can get absurdly large, as w itself isnt constrained?
 
-    def metrics_train(self, w, lpopt_train:LPOpt):
+    def metrics_train(self, w, lpopt_train):
         '''
             Get logloss, accuracy, decision quality on training data
 
@@ -39,7 +39,56 @@ class DFL:
         dq = lpopt_train.get_DQ(w)
         return ll, acc, dq
 
-    def metrics_test(self, w, lpopt_test:LPOpt):
+    def metrics_test(self, w, lpopt_test):
+        '''
+            Get logloss, accuracy, decision quality on test data
+
+            lpopt is the optimization problem on the test data
+        '''
+        lla = LogLossAccuracy(self.X_test, self.y_test)
+        ll = lla.get_logloss(w)
+        acc = lla.get_accuracy(w)
+        dq = lpopt_test.get_DQ(w)
+        return ll, acc, dq
+
+
+class DFLv2:
+    def __init__(self, X_train, y_train, X_test, y_test):
+        self.X_train = X_train
+        self.y_train = y_train
+        self.X_test = X_test
+        self.y_test = y_test
+        self.n_train, self.dim = X_train.shape
+    
+    def train_privately(self, epsilon:float, c:float, lamb:float):
+        '''
+            epsilon: privacy parameter, c is Q=cI, lamb is regularization parameter
+            ---
+            Pertubed Obj min_w \left[ -y_train^T (Q_inv (X_train w - G^T \gamma_dual)) \right] + 0.5 * lamb * ||w||^2 + 1/n * (b^T w)
+            
+            We assume Q = c I_n, so Q_inv = 1/c I_n
+
+            Pertubed Obj has a closed form solution:
+            theta_dpfl = 1/lamb (1/c * X_train^T y_train - 1/n * b)
+        '''
+        eta = c * epsilon / (4 * self.n_train**0.5)
+        b = sample_l2lap(eta = eta, d = self.dim)
+        self.w_pri = 1/(self.n_train * lamb) * ((1/c) * self.X_train.T @ self.y_train - b)
+        return self.w_pri
+
+    def metrics_train(self, w, lpopt_train):
+        '''
+            Get logloss, accuracy, decision quality on training data
+
+            lpopt is the optimization problem on the training data
+        '''
+        lla = LogLossAccuracy(self.X_train, self.y_train)
+        ll = lla.get_logloss(w)
+        acc = lla.get_accuracy(w)
+        dq = lpopt_train.get_DQ(w)
+        return ll, acc, dq
+
+    def metrics_test(self, w, lpopt_test):
         '''
             Get logloss, accuracy, decision quality on test data
 
