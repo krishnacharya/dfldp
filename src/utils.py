@@ -35,3 +35,24 @@ def generate_synth_data(B_train, B_test, d):
     y_test = np.random.choice([-1, 1], size=(B_test,))
 
     return X_train, y_train, X_test, y_test
+
+def generate_eps_lambda_csv(output_file="eps_lambda.csv"):
+    epsilons = [0.1, 0.5, 1, 2]
+    lamb_dfls = [0.1, 0.5, 1, 5, 10]
+    lamb_lrs = [0.1, 0.5, 1, 5, 10]
+
+    # Create a list of all possible combinations of the parameters.
+    combinations = [(eps, ldfl, llr)
+                    for eps in epsilons
+                    for ldfl in lamb_dfls
+                    for llr in lamb_lrs]
+
+    # Create a Pandas DataFrame from the combinations list.
+    df = pd.DataFrame(combinations, columns=['epsilon', 'lambda_dfl', 'lambda_lr'])
+
+    # Save the DataFrame to a CSV file.
+    df.to_csv(output_file, index=False)  # index=False prevents writing the DataFrame index to the CSV.
+    print(f"Generated parameter combinations and saved to {output_file}")
+
+if __name__ == "__main__":
+    generate_eps_lambda_csv()
