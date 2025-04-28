@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def sample_l2lap(eta:float, d:int) -> np.array:
   R = np.random.gamma(d, scale = 1.0 / eta)
