@@ -11,5 +11,5 @@ mkdir -p ./Sbatch-csvconcat
 module load anaconda3/2022.05.0.1
 conda activate dfldp
 
-op_name='vsb_100'
+op_name='vfiner'
 python concat_dfs.py --op_name ${op_name}
