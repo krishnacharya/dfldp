@@ -90,12 +90,10 @@ if __name__ == "__main__":
     target_col = 'income'
     X_train, X_test, y_train, y_test = split_data(df=df, target_col=target_col, train_size=B, test_size=B, random_state=42)
     X_train, X_test, y_train, y_test = X_train.values, X_test.values, y_train.values, y_test.values
-
-    c_dfl_values = [0.01, 0.1, 0.5, 1] # finer grid here [0.01, 0.02 ...5]
-    epsilons = [0.1, 0.5, 1, 2] # check more values < 1
+    c_dfl_values = [0.01, 0.1, 0.5, 1]
+    epsilons = [0.1, 0.5, 1, 2]
     lamb_dfls = [0.1, 0.5, 1, 5, 10]
     lamb_lrs = [0.1, 0.5, 1, 5, 10]
-    # diagonose w norm for DFL, epsilon large for term1, c=1
     save_filename_prefix = 'dfl_best_c'
     all_combinations = [(epsilon, lamb_dfl, lamb_lr)
                         for epsilon in epsilons
