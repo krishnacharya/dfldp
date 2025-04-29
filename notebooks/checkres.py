@@ -6,7 +6,7 @@ from src.project_dirs import output_dir_name
 #CHECK res of sbatch
 
 if __name__ == "__main__":
-    filepath = str(output_dir_name('vsb_100'))
+    filepath = str(output_dir_name('vfiner'))
     print(filepath)
     files = os.listdir(filepath)
     csv_files = [file for file in files if file.endswith('.csv')]
