@@ -7,7 +7,6 @@ from src.TwoStageLogReg import TwoStage
 from src.LPopt import LPOptv2
 from src.project_dirs import processed_data_root, output_dir_name
 from src.preprocess_data import split_data
-from tqdm import tqdm
 import argparse
 
 
@@ -101,7 +100,8 @@ if __name__ == "__main__":
     df = pd.read_csv(filepath)
     target_col = 'income'
 
-    c_dfl_values = [0.01, 0.1, 0.5, 1] # hardcoded for now
+    # c_dfl_values = [0.01, 0.1, 0.5, 1] # hardcoded for now
+    c_dfl_values = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
 
     X_train, X_test, y_train, y_test = split_data(df=df, target_col=target_col, train_size=B, test_size=B, random_state=42)
     X_train, X_test, y_train, y_test = X_train.values, X_test.values, y_train.values, y_test.values
@@ -110,4 +110,4 @@ if __name__ == "__main__":
     resdf = df_vs_lr(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                     epsilon=epsilon, c_values = c_dfl_values, lamb_dfl=lamb_dfl, lamb_lr=lamb_lr, num_runs=num_runs)
     save_filename = f"{save_filename_prefix}_{B}_eps{epsilon}_lambdfl{lamb_dfl}_lamblr{lamb_lr}.csv"
-    resdf.to_csv(str(output_dir_name('vsb_100') / save_filename), index=False) # hardcoded path fix
+    resdf.to_csv(str(output_dir_name('vfiner') / save_filename), index=False) # hardcoded path fix
