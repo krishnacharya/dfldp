@@ -106,4 +106,4 @@ if __name__ == "__main__":
         resdf = df_vs_lr(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                         epsilon=epsilon, c_values = c_dfl_values, lamb_dfl=lamb_dfl, lamb_lr=lamb_lr, num_runs=num_runs)
         save_filename = f"{save_filename_prefix}_{B}_eps{epsilon}_lambdfl{lamb_dfl}_lamblr{lamb_lr}.csv"
-        resdf.to_csv(str(output_dir_name('v2_100run') / save_filename), index=False)
+        resdf.to_csv(str(output_dir_name('vdebug') / save_filename), index=False)

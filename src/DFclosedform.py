@@ -72,7 +72,7 @@ class DFLv2:
             theta_dpfl = 1/lamb (1/c * X_train^T y_train - 1/n * b)
         '''
         eta = c * epsilon / (4 * self.n_train**0.5)
-        b = sample_l2lap(eta = eta, d = self.dim)
+        b = sample_l2lap(eta = eta, d = self.dim) # b is typically huge norm!
         self.w_pri = 1/(self.n_train * lamb) * ((1/c) * self.X_train.T @ self.y_train - b)
         return self.w_pri
 
