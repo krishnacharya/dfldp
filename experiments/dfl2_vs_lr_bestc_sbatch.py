@@ -88,26 +88,29 @@ if __name__ == "__main__":
     parser.add_argument('--epsilon', type=float, required=True, help='Epsilon value for privacy.')
     parser.add_argument('--lamb_dfl', type=float, required=True, help='Lambda value for DFL regularization.')
     parser.add_argument('--lamb_lr', type=float, required=True, help='Lambda value for Logistic Regression regularization.')
+    parser.add_argument('--c_dfl_values', type=str, required=True,help='Comma-separated list of c_dfl values (e.g., "0.1,0.2,0.5")')
+    parser.add_argument('--save_filename_prefix', type=str, required=False,default='dfl_best_c',help='Save filename prefix(e.g., "dfl_best_c_100_eps0.1_lambdfl0.1_lamblr0.1")')
+    parser.add_argument('--output_dir', type=str, required=True,default='vrun100',help='Output directory name')
+    
     args = parser.parse_args()
+    c_dfl_values = [float(val) for val in args.c_dfl_values.split(",")]
+    print("Parsed c_dfl_values:", c_dfl_values)
 
     B = args.batch_size
     num_runs = args.num_runs
     epsilon = args.epsilon
     lamb_dfl = args.lamb_dfl
     lamb_lr = args.lamb_lr
+    save_filename_prefix = args.save_filename_prefix
+    output_dir = args.output_dir
 
     filepath = str(processed_data_root() / "adult_recon26000.csv")
     df = pd.read_csv(filepath)
     target_col = 'income'
 
-    # c_dfl_values = [0.01, 0.1, 0.5, 1] # hardcoded for now
-    c_dfl_values = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
-
     X_train, X_test, y_train, y_test = split_data(df=df, target_col=target_col, train_size=B, test_size=B, random_state=42)
     X_train, X_test, y_train, y_test = X_train.values, X_test.values, y_train.values, y_test.values
-
-    save_filename_prefix = 'dfl_best_c'
     resdf = df_vs_lr(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                     epsilon=epsilon, c_values = c_dfl_values, lamb_dfl=lamb_dfl, lamb_lr=lamb_lr, num_runs=num_runs)
     save_filename = f"{save_filename_prefix}_{B}_eps{epsilon}_lambdfl{lamb_dfl}_lamblr{lamb_lr}.csv"
-    resdf.to_csv(str(output_dir_name('vfiner') / save_filename), index=False) # hardcoded path fix
+    resdf.to_csv(str(output_dir_name(output_dir) / save_filename), index=False)

@@ -13,7 +13,7 @@ module load anaconda3/2022.05.0.1
 conda activate dfldp
 
 n=$SLURM_ARRAY_TASK_ID
-iteration=$(sed -n "${n} p" eps_finer.csv)  # Get n-th line (1-indexed) of the file
+iteration=$(sed -n "${n}p" eps_finer.csv)  # Get n-th line (1-indexed) of the file
 echo "parameters for iteration: ${iteration}"
 
 num_runs=100
@@ -22,4 +22,15 @@ eps=$(echo ${iteration} | cut -d "," -f 1)
 lambda_dfl=$(echo ${iteration} | cut -d "," -f 2)
 lambda_lr=$(echo ${iteration} | cut -d "," -f 3)
 
-python dfl2_vs_lr_bestc_sbatch.py --batch_size ${B} --num_runs ${num_runs} --epsilon ${eps} --lamb_dfl ${lambda_dfl} --lamb_lr ${lambda_lr}
+# Comma-separated string of c_dfl values
+c_dfl_values="0.1,0.2,0.5,1,2,5,8,10"
+output_dir='vhigherc'
+
+python dfl2_vs_lr_bestc_sbatch.py \
+    --batch_size ${B} \
+    --num_runs ${num_runs} \
+    --epsilon ${eps} \
+    --lamb_dfl ${lambda_dfl} \
+    --lamb_lr ${lambda_lr} \
+    --c_dfl_values "${c_dfl_values}" \
+    --output_dir ${output_dir}
