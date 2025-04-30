@@ -5,6 +5,7 @@ from src.LogLossAccuracy import LogLossAccuracy
 from src.DFclosedform import DFLv2
 from src.TwoStageLogReg import TwoStage
 from src.LPopt import LPOptv2
+from src.RandomGuess import RandomGuess
 from src.project_dirs import processed_data_root, output_dir_name
 from src.preprocess_data import split_data
 import argparse
@@ -52,6 +53,12 @@ def df_vs_lr(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_tes
         w_lr = logreg.train_privately(epsilon=epsilon, lamb=lamb_lr)
         trainloss_lr, trainacc_lr, traindq_lr = logreg.metrics_train(w_lr, lpopt_train)
         testloss_lr, testacc_lr, testdq_lr = logreg.metrics_test(w_lr, lpopt_test)
+
+        # Random guess
+        rg = RandomGuess(X_train, y_train, X_test, y_test)
+        trainloss_rg, trainacc_rg, traindq_rg = rg.metrics_train(lpopt_train)
+        testloss_rg, testacc_rg, testdq_rg = rg.metrics_test(lpopt_test)
+
         di = {
             'run': i,
             'key': f"eps{epsilon}_lambdfl{lamb_dfl}_lamblr{lamb_lr}",
@@ -65,7 +72,6 @@ def df_vs_lr(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_tes
             'trainloss_dfl': save_trainloss_dfl,
             'trainacc_dfl': save_trainacc_dfl,
             'traindq_dfl': save_traindq_dfl,
-
             'testloss_dfl': save_testloss_dfl,
             'testacc_dfl': save_testacc_dfl,
             'testdq_dfl': best_dq_dfl,
@@ -73,10 +79,16 @@ def df_vs_lr(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_tes
             'trainloss_lr': trainloss_lr,
             'trainacc_lr': trainacc_lr,
             'traindq_lr': traindq_lr,
-            
             'testloss_lr': testloss_lr,
             'testacc_lr': testacc_lr,
-            'testdq_lr': testdq_lr
+            'testdq_lr': testdq_lr,
+
+            'trainloss_rg': trainloss_rg,
+            'trainacc_rg': trainacc_rg,
+            'traindq_rg': traindq_rg,
+            'testloss_rg': testloss_rg,
+            'testacc_rg': testacc_rg,
+            'testdq_rg': testdq_rg,
         }
         results.append(di)
     return pd.DataFrame(results)

@@ -6,6 +6,23 @@ class LogLossAccuracy:
     def __init__(self, X, y):
         self.X = X
         self.y = y
+    
+    def get_lossloss_randomguess(self):
+        '''
+            Guess label -1, +1 randomly for each sample in X and computes logistic loss
+        '''
+        y_rand = np.random.choice([-1, 1], size=self.X.shape[0])
+        z = y_rand * self.y
+        loss = np.mean(np.log(1 + np.exp(-z)))
+        return loss
+
+    def get_accuracy_randomguess(self):
+        '''
+            Guess label -1, +1 randomly for each sample in X and computes accuracy
+        '''
+        y_rand = np.random.choice([-1, 1], size=self.X.shape[0])
+        acc = np.mean(y_rand == self.y)
+        return acc
 
     def get_logloss(self, w):
         '''

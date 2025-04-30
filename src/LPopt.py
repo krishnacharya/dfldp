@@ -110,6 +110,17 @@ class LPOptv2:
             return self.DQ
         else:
             return None
+    
+    def get_DQ_randomguess(self):
+        '''
+            Compute the decision quality of a random guess
+        '''
+        y_rand = np.random.choice([-1, 1], size=self.n)
+        z_rand, _ = self.get_z(y_rand)
+        if z_rand is not None:
+            return (self.y @ z_rand) / self.n
+        else:
+            return None
 
 
 

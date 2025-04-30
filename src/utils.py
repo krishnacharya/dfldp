@@ -38,13 +38,8 @@ def generate_synth_data(B_train, B_test, d):
     return X_train, y_train, X_test, y_test
 
 def generate_eps_lambda_csv(output_file="eps_lambda.csv"):
-    # epsilons = [0.1, 0.5, 1, 2]
-    # lamb_dfls = [0.1, 0.5, 1, 5, 10]
-    # lamb_lrs = [0.1, 0.5, 1, 5, 10]
-
-    # c_dfl_values = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
-    epsilons = [0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 2]
-    lamb_dfls = [0.1, 0.5, 1, 5, 10] 
+    epsilons = [0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 2, 10, 100, 1000, 10000]
+    lamb_dfls = [0.1, 0.5, 1, 5, 10]
     lamb_lrs = [0.1, 0.5, 1, 5, 10]
 
     # Create a list of all possible combinations of the parameters.
@@ -121,4 +116,4 @@ def plot_grouped_dq(df_all: pd.DataFrame, cols: list[str],
     plt.show()
 
 if __name__ == "__main__":
-    generate_eps_lambda_csv('eps_finer.csv')
+    generate_eps_lambda_csv('eps_vlarge.csv')
