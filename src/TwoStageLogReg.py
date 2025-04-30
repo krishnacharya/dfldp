@@ -12,6 +12,7 @@ class TwoStage:
         self.y_test = y_test
         self.n_train = X_train.shape[0]
         self.dim = X_train.shape[1]
+        self.eta = None # will be set in train_privately using get_Delta_and_noisevec
 
     def train_noprivacy(self, lamb):
         '''
@@ -37,6 +38,20 @@ class TwoStage:
         self.w_nopri = result.x
         return self.w_nopri
 
+    def get_Delta_and_noisevec(self, epsilon, lamb):
+        '''
+            Get the Delta and the self.dim dimensional noise vector
+        '''
+        q = 1/4 # UB for second derivative of logloss
+        epsilon_prime = epsilon - 2 * np.log(1 + 2*q / (self.n_train * lamb))
+        if epsilon_prime > 0:
+            Delta = 0
+        else:
+            Delta = (2*q) / (self.n_train*(np.exp(epsilon/4)-1)) - lamb
+            epsilon_prime = epsilon / 2
+        self.eta = epsilon_prime/2
+        return Delta, sample_l2lap(eta=epsilon_prime/2, d=self.dim)
+
     def train_privately(self, epsilon, lamb):
         '''
             lamb is the regularization
@@ -58,21 +73,7 @@ class TwoStage:
             grad = np.mean(-(X * (y*sigmoid).reshape(-1,1)), axis=0) + b/self.n_train + (lamb+Delta) * w
             return grad
         
-        def get_Delta_and_noisevec(epsilon, lamb):
-            '''
-                Get the Delta and the self.dim dimensional noise vector
-            '''
-            q = 1/4 # UB for second derivative of logloss
-            epsilon_prime = epsilon - 2 * np.log(1 + 2*q / (self.n_train * lamb))
-            if epsilon_prime > 0:
-                Delta = 0
-            else:
-                Delta = (2*q) / (self.n_train*(np.exp(epsilon/4)-1)) - lamb
-                epsilon_prime = epsilon / 2
-            
-            return Delta, sample_l2lap(eta=epsilon_prime/2, d=self.dim)
-
-        Delta, b = get_Delta_and_noisevec(epsilon, lamb)
+        Delta, b = self.get_Delta_and_noisevec(epsilon, lamb)
         w_init = np.random.randn(self.dim) * 0.01
         result = minimize(logistic_loss_private, w_init, args=(self.X_train, self.y_train, lamb, Delta, b),
                           jac=logistic_loss_private_grad, method='L-BFGS-B')
