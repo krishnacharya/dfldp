@@ -17,8 +17,8 @@ if __name__ == "__main__":
 
     df_all = pd.concat([pd.read_csv(os.path.join(filepath, file)) for file in csv_files], ignore_index=True)
     #remove all csv files in directory
-    for file in csv_files:
-        os.remove(os.path.join(filepath, file))
+    # for file in csv_files:
+    #     os.remove(os.path.join(filepath, file))
     #save concatenated dataframe to csv
     output_file = os.path.join(filepath, 'concatenated_data.csv')
     df_all.to_csv(output_file, index=False)

@@ -1,0 +1,5 @@
+# Ignore files starting with dfl_best_c_ in any directory
+**/dfl_best_c_*
+
+# Common system files to ignore
+.DS_Store
